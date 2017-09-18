@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      .error{
+          padding: 10px;
+      }      
+      .comments{
+        margin-bottom: 15px;
+      }
+      .comment-box {
+        margin-top: 30px;
+      }
+      .comment-box {
+        border: 1px solid #ddd;
+        padding: 10px 15px;
+      }
+      .comment-box h3 {
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+        padding: 7px 15px;
+        margin: -10px -15px 10px;
+      }
+      .comment-box:first-child,#commentsTitle,#buttonMore{
+        display: none;
+      }
+    </style>
+
+  </head>
+  <body>   
+
+    <div class="container">
+      <h1>«Супесчаный микроагрегат: предпосылки и развитие»</h1>
+      <p>Можно думать, что свойство стабильно. Фрактал, как следствие уникальности почвообразования в данных условиях, представляет собой пылеватый лизиметр даже в том случае, если непосредственное наблюдение этого явления затруднительно. Скелетана, по данным почвенной съемки, эксперментально верифицируема. Желтозём химически иссушает капилляр как при нагреве, так и при охлаждении.</p>
+      <p>Парарендзина перемещает неоднородный бурозём. Поверхность раздела фаз, если принять во внимание воздействие фактора времени, переносит монолит при любом их взаимном расположении. Парафинирование отражает карбонат кальция. Исследование представляет собой кислый потенциал почвенной влаги, хотя этот факт нуждается в дальнейшей тщательной экспериментальной проверке. Органическое вещество поглощает почвообразующий фронт даже в том случае, если непосредственное наблюдение этого явления затруднительно.</p>
+      <p>Минерал, вследствие пространственной неоднородности почвенного покрова, разрушаем. Дистанционное зондирование представляет собой копролит. Инфильтрация, несмотря на внешние воздействия, однородно возникает желтозём при любом их взаимном расположении. Взвесь мгновенно восстанавливает песок. Ил, как следует из полевых и лабораторных наблюдений, продуцирует зоогенный грунт.</p>
+
+      <h2 id="commentsTitle">Комментарии</h2>
+
+      <div class="comments">
+        <div class="comment-box">
+          <h3>UserName</h3>
+          <div class="comment-text"></div>
+        </div>
+      </div>
+
+      <button type="button"  class="btn btn-default center-block" id="buttonMore">Еще комментарии</button>
+
+      <h2>Написать комментарий</h2>
+
+
+      <form class="form-horizontal" id="form">
+        
+        <div class="form-group">
+          <label for="inputName" class="col-sm-2 control-label">Имя</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="inputName" placeholder="Имя" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+          <div class="col-sm-10">
+            <input type="email" class="form-control" id="inputEmail" placeholder="Email" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputComment" class="col-sm-2 control-label">Комментарий</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" rows="3" id="inputComment" placeholder="Текст комментария" required></textarea>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default" id="buttonSubmit">Отправить</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <p class="bg-danger error invisible"></p>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        
+        $('form').submit(function(e){
+          e.preventDefault();          
+          var name = $('#inputName').val();
+          var email = $('#inputEmail').val();
+          var comment = $('#inputComment').val();
+          if(!$('#buttonSubmit').prop('disable'))
+          $.ajax({
+            url: "comment.php",
+            method: "POST",
+            data: {action: "add", name: name, email: email, comment: comment},
+            dataType: "json",
+            beforeSend: function(){
+              $('#buttonSubmit').prop('disable',true);
+              $('#buttonSubmit').addClass('disabled');
+            }
+          }).done(function(data) {
+            if(data.error){
+              $('.error').text(data.error);
+              $('.error').removeClass('invisible');
+            }else{
+              $('#inputName').val('');
+              $('#inputEmail').val('');
+              $('#inputComment').val('');
+              $('.error').addClass('invisible');
+              var date = new Date();
+              appendComment({name: name, email: email, comment: comment, created: moment().format("DD.MM.YYYY в HH:mm")},true)
+            }
+            $('#buttonSubmit').prop('disable',false);
+            $('#buttonSubmit').removeClass('disabled');
+          });          
+        });
+        $('#buttonMore').click(function(){
+
+          loadCommets($(this).data('id'))
+        });
+        function appendComment(comment,top){
+          var commentBox = $('.comment-box').first().clone();
+          commentBox.find('h3').text(comment.name+' ('+comment.email+') '+comment.created);
+          commentBox.find('.comment-text').text(comment.comment);
+          if(top){
+            $('.comment-box').first().after(commentBox);
+          }else{
+            $('.comments').append(commentBox);
+          }
+          $('#buttonMore').data('id',comment.id);
+        }
+        function loadCommets(last){
+          if(!$('#buttonMore').prop('disable'))
+          $.ajax({
+            url: "comment.php",
+            method: "POST",
+            data: {action: "get", last: last},
+            dataType: "json",
+            beforeSend: function(){
+              $('#buttonMore').prop('disable',true);
+              $('#buttonMore').addClass('disabled');
+            }
+          }).done(function(data) {
+            if(data.comments){
+              $.each(data.comments, function(key,comment) {
+                appendComment(comment);
+              });
+              if(!data.more){
+                $('#buttonMore').hide();
+              }else{
+                $('#buttonMore').css('display','block');
+              }
+            $('#buttonMore').prop('disable',false);
+            $('#buttonMore').removeClass('disabled');
+            } 
+            if($('.comment-box').length<2){
+              $('#commentsTitle').hide();
+            }else{
+              $('#commentsTitle').show();
+            }
+          });          
+        }
+        loadCommets();
+
+      });
+    </script>
+  </body>
+</html>
